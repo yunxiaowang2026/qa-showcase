@@ -1,0 +1,12 @@
+# Ignore Node dependencies
+node_modules/
+
+# Ignore Playwright execution outputs
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Ignore System files
+.DS_Store
+Thumbs.db
