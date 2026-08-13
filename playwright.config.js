@@ -9,7 +9,7 @@ module.exports = defineConfig({
   use: {
     // Base URL matching your local Live Server address
     baseURL: 'http://127.0.0.1:5500',
-    headless: false,
+    headless: true,
   },
 
   // Launch a CLI server automatically for Playwright and CI environment
