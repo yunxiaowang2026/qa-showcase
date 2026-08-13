@@ -3,6 +3,9 @@ const { defineConfig } = require('@playwright/test');
 module.exports = defineConfig({
   testDir: './tests',
 
+// Enable HTML reporter so CI can generate and upload test reports
+  reporter: [['html', { open: 'never' }]],
+
   use: {
     // Base URL matching your local Live Server address
     baseURL: 'http://127.0.0.1:5500',
