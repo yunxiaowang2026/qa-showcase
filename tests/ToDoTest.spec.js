@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 // Basic test case to check if the app loads properly
 test('should load the page correctly', async ({ page }) => {
   // Navigate to your app URL (update port/path as needed)
-  await page.goto('http://127.0.0.1:5500/index.html');
+  await page.goto('/');
 
   // Assert page title or an expected element
   await expect(page).toHaveTitle(/To-Do/i);
