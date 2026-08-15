@@ -1,34 +1,52 @@
+// ToDoTest.spec.js
 const { test, expect } = require('@playwright/test');
+const { TodoPage } = require('./pages/todo.page');
 
-// Basic test case to check if the app loads properly
-test('should load the page correctly', async ({ page }) => {
-  // Navigate to your app URL (update port/path as needed)
-  await page.goto('/');
+test.describe('To-Do App (POM Architecture)', () => {
+  let todoPage;
 
-  // Assert page title or an expected element
-  await expect(page).toHaveTitle(/To-Do/i);
+  // Runs before each test to ensure a clean state
+  test.beforeEach(async ({ page }) => {
+    todoPage = new TodoPage(page);
+    await todoPage.goto();
+  });
+
+  test('should load the page correctly', async ({ page }) => {
+    await expect(page).toHaveTitle(/To-Do/i);
+  });
+
+  test('should allow adding a To-Do item', async () => {
+    const todoText = 'Wandern';
+
+    // 1. Take initial screenshot
+    await todoPage.takeScreenshot('01_screenshot');
+
+    // 2. Add a to-do item
+    await todoPage.addTodo(todoText);
+    await todoPage.takeScreenshot('02_screenshot');
+
+    // 3. Assertions
+    // Assertion A: Verify input field is cleared after submission
+    await expect(todoPage.todoInput).toHaveValue('');
+
+    // Assertion B: Verify the item is actually added to the list
+    await expect(todoPage.todoItems).toContainText(todoText);
+  });
+
+  test('should allow deleting a To-Do item', async ({ page }) => {
+    const todoText = 'Einkaufen gehen';
+
+    // 1. Add a to-do item first to prepare test data
+    await todoPage.addTodo(todoText);
+
+    // 2. Perform delete action
+    await todoPage.deleteTodoByText(todoText);
+
+    // Assertion: Verify the deleted item text is no longer visible
+    await expect(page.getByText(todoText)).not.toBeVisible();
+  });
+
+  
+
+
 });
-
-/** 
-(async () => {
-  // headless: true bedeutet, der Browser läuft im Hintergrund ohne sichtbares Fenster
-  const browser = await chromium.launch({ 
-    headless: false,
-    slowMo:500
-});
-  const page = await browser.newPage();
-
-  // Viewport-Größe festlegen
-  await page.setViewportSize({ width: 2560, height: 1440});
-
-  // 1. Startseite aufrufen und Screenshot aufnehmen
-  await page.goto('https://yunxiaowang2026.github.io/qa-showcase/');
-  await page.screenshot({ path: 'screenshots/01_screenshot.png', fullPage: true });
-    // 3. ToDo eingeben und einfügen
-  console.log(await page.evaluate(() => localStorage.length));
-  await page.locator('#todoInput').fill('Einkaufen');
-  await page.locator('#addBtn').click();
-  console.log(await page.evaluate(() => localStorage.length));
-
-  await browser.close();
-})();*/
