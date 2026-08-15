@@ -10,3 +10,6 @@ playwright/.cache/
 # Ignore System files
 .DS_Store
 Thumbs.db
+
+# Ignore Screenshots
+screenshots/

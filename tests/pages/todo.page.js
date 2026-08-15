@@ -6,6 +6,7 @@ class TodoPage {
     
     // Target only visible list items to ignore hidden template elements
     this.todoItems = page.locator('#todoList li:visible');
+    this.itemsLeftLabel = page.locator('#items-left');
   }
 
   // Navigate to the app and clear local storage to isolate tests
@@ -32,6 +33,24 @@ class TodoPage {
     
     // Click delete button inside that item
     await todoItem.locator('.delete-btn').click({ force: true });
+  }
+
+  /**
+   * Waits for the element to be visible and returns the leading number from its text content.
+   * @returns {Promise<number>} The extracted count of active To-Dos.
+   */
+  async getTheNumberOfAktivToDos() {
+    // 1. Wait until the dynamically rendered element is visible
+    await this.itemsLeftLabel.waitFor({ state: 'visible' });
+
+    // 2. Get the inner text of the element
+    const text = await this.itemsLeftLabel.innerText();
+
+    // 3. Extract leading digits using regex (e.g., "3 items" -> "3")
+    const match = text.trim().match(/^\d+/);
+
+    // 4. Return the parsed integer (returns 0 if no digits found)
+    return match ? parseInt(match[0], 10) : 0;
   }
 
   // Helper method to take screenshots

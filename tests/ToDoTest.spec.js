@@ -31,19 +31,36 @@ test.describe('To-Do App (POM Architecture)', () => {
 
     // Assertion B: Verify the item is actually added to the list
     await expect(todoPage.todoItems).toContainText(todoText);
+
+    // Get the actual number from the Page Object
+    const activeCount = await todoPage.getTheNumberOfAktivToDos();
+
+    // Perform assertion in the spec file
+    expect(activeCount).toBe(1);
   });
 
   test('should allow deleting a To-Do item', async ({ page }) => {
-    const todoText = 'Einkaufen gehen';
+    const todoText1 = 'Einkaufen gehen';
+    const todoText2 = 'Wandern';
+    const todoText3 = 'Deutsch lernen';
 
-    // 1. Add a to-do item first to prepare test data
-    await todoPage.addTodo(todoText);
+    // 1. Add 3 to-do items first to prepare test data
+    await todoPage.addTodo(todoText1);
+    await todoPage.addTodo(todoText2);
+    await todoPage.addTodo(todoText3);
 
     // 2. Perform delete action
-    await todoPage.deleteTodoByText(todoText);
+    await todoPage.deleteTodoByText(todoText2);
 
     // Assertion: Verify the deleted item text is no longer visible
-    await expect(page.getByText(todoText)).not.toBeVisible();
+    await expect(page.getByText(todoText2)).not.toBeVisible();
+
+    // Get the actual number from the Page Object
+    const activeCount = await todoPage.getTheNumberOfAktivToDos();
+
+    // Perform assertion in the spec file
+    expect(activeCount).toBe(2);
+
   });
 
   
