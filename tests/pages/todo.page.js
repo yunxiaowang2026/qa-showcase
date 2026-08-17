@@ -21,6 +21,7 @@ class TodoPage {
   async addTodo(text) {
     await this.todoInput.fill(text);
     await this.todoInput.press('Enter');
+    await this.todoItems.getByText(text).waitFor();
   }
 
   // Delete a specific todo item by text
