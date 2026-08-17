@@ -15,54 +15,67 @@ test.describe('To-Do App (POM Architecture)', () => {
     await expect(page).toHaveTitle(/To-Do/i);
   });
 
-  test('should allow adding a To-Do item', async () => {
-    const todoText = 'Wandern';
+test('should allow adding new To-Do items (TC-S1-01)', async ({ page }) => {
+  const todoText1 = 'Einkaufen';
+  const todoText2 = 'Sport machen';
 
-    // 1. Take initial screenshot
-    await todoPage.takeScreenshot('01_screenshot');
+  // --- Step 1: Enter "Einkaufen" and click the Add button ---
+  await todoPage.addTodo(todoText1);
 
-    // 2. Add a to-do item
-    await todoPage.addTodo(todoText);
-    await todoPage.takeScreenshot('02_screenshot');
+  // Assertions for Step 1
+  await expect(todoPage.todoInput).toHaveValue('');
+  await expect(todoPage.todoItems).toContainText([todoText1]);
 
-    // 3. Assertions
-    // Assertion A: Verify input field is cleared after submission
-    await expect(todoPage.todoInput).toHaveValue('');
+  let activeCount = await todoPage.getTheNumberOfAktivToDos();
+  expect(activeCount).toBe(1);
 
-    // Assertion B: Verify the item is actually added to the list
-    await expect(todoPage.todoItems).toContainText(todoText);
+  // --- Step 2: Enter "Sport machen" and press the Enter key ---
+  await todoPage.todoInput.fill(todoText2);
+  await todoPage.todoInput.press('Enter');
 
-    // Get the actual number from the Page Object
-    const activeCount = await todoPage.getTheNumberOfAktivToDos();
+  // Assertions for Step 2
+  await expect(todoPage.todoInput).toHaveValue('');
+  await expect(todoPage.todoItems).toContainText([todoText1, todoText2]);
 
-    // Perform assertion in the spec file
-    expect(activeCount).toBe(1);
-  });
+  activeCount = await todoPage.getTheNumberOfAktivToDos();
+  expect(activeCount).toBe(2);
 
-  test('should allow deleting a To-Do item', async ({ page }) => {
-    const todoText1 = 'Einkaufen gehen';
-    const todoText2 = 'Wandern';
-    const todoText3 = 'Deutsch lernen';
+  // --- Step 3: Reload page (F5) and verify persistence ---
+  await page.reload();
 
-    // 1. Add 3 to-do items first to prepare test data
-    await todoPage.addTodo(todoText1);
-    await todoPage.addTodo(todoText2);
-    await todoPage.addTodo(todoText3);
+  // Assertions for Step 3
+  await expect(todoPage.todoItems).toContainText([todoText1, todoText2]);
 
-    // 2. Perform delete action
-    await todoPage.deleteTodoByText(todoText2);
+  activeCount = await todoPage.getTheNumberOfAktivToDos();
+  expect(activeCount).toBe(2);
+});
 
-    // Assertion: Verify the deleted item text is no longer visible
-    await expect(page.getByText(todoText2)).not.toBeVisible();
+test('should allow deleting a To-Do item', async ({ page }) => {
+  const todoText1 = 'Einkaufen gehen';
+  const todoText2 = 'Wandern';
+  const todoText3 = 'Deutsch lernen';
 
-    // Get the actual number from the Page Object
-    const activeCount = await todoPage.getTheNumberOfAktivToDos();
+  // 1. Add 3 to-do items first to prepare test data
+  await todoPage.addTodo(todoText1);
+  await todoPage.addTodo(todoText2);
+  await todoPage.addTodo(todoText3);
 
-    // Perform assertion in the spec file
-    expect(activeCount).toBe(2);
+  // 2. Perform delete action
+  await todoPage.deleteTodoByText(todoText2);
 
-  });
+  // Step 1 Assertion: Verify immediate update (without reload)
+  await expect(page.getByText(todoText2)).not.toBeVisible();
+  let activeCount = await todoPage.getTheNumberOfAktivToDos();
+  expect(activeCount).toBe(2);
 
+  // 3. Reload page to test persistence 
+  await page.reload();
+
+  // Step 2 Assertion: Verify state remains unchanged after reload
+  await expect(page.getByText(todoText2)).not.toBeVisible();
+  activeCount = await todoPage.getTheNumberOfAktivToDos();
+  expect(activeCount).toBe(2);
+});
   
 
 

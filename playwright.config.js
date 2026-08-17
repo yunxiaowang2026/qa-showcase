@@ -3,13 +3,17 @@ const { defineConfig } = require('@playwright/test');
 module.exports = defineConfig({
   testDir: './tests',
 
-// Enable HTML reporter so CI can generate and upload test reports
+  // Enable HTML reporter so CI can generate and upload test reports
   reporter: [['html', { open: 'never' }]],
 
   use: {
     // Base URL matching your local Live Server address
     baseURL: 'http://127.0.0.1:5500',
     headless: true,
+    
+    // 设置浏览器语言为德语及欧洲/柏林时区
+    locale: 'de-DE',
+    timezoneId: 'Europe/Berlin',
   },
 
   // Launch a CLI server automatically for Playwright and CI environment
